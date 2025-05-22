@@ -3,6 +3,7 @@ package org.example.servidor.database.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,13 +23,14 @@ public class Medico implements Serializable {
     @Column(name = "email", length = 100, nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cita> citas;
+    @OneToMany(mappedBy = "medico", fetch = FetchType.LAZY, cascade = {})
+    private List<Cita> citas = new ArrayList<>();
 
     private static final long serialVersionUID = 1L;
 
     // Constructores
-    public Medico() {}
+    public Medico() {
+    }
 
     public Medico(String cedula, String nombre, String especialidad, String email) {
         this.cedula = cedula;

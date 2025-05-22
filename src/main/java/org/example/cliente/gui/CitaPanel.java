@@ -4,6 +4,7 @@ package org.example.cliente.gui;
 import com.toedter.calendar.JDateChooser;
 import org.example.cliente.gui.components.DateLabelFormatter;
 import org.example.cliente.network.ClientNetwork;
+import org.example.servidor.database.dtos.CitaCrearDTO;
 import org.example.servidor.database.dtos.CitaDTO;
 import org.example.servidor.database.dtos.MedicoDTO;
 import org.example.servidor.database.dtos.PacienteDTO;
@@ -177,20 +178,60 @@ public class CitaPanel extends JPanel implements PanelObserver {
     }
 
     private void agregarCita(ActionEvent e) {
+        try {
+            if (!validarCampos()) return;
+
+            CitaCrearDTO citaDTO = new CitaCrearDTO(
+                    dateChooser.getDate(),
+                    (String) horaComboBox.getSelectedItem(),
+                    motivoField.getText().trim(),
+                    ((Medico)medicoComboBox.getSelectedItem()).getCedula(),
+                    ((Paciente)pacienteComboBox.getSelectedItem()).getCurp()
+            );
+
+            Response response = ClientNetwork.sendRequest(new Request("CREATE_CITA", citaDTO));
+
+            if (response.isSuccess()) {
+                JOptionPane.showMessageDialog(this, "Cita creada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                limpiarCampos();
+                loadCitas();
+            } else {
+                throw new RuntimeException(response.getMessage());
+            }
+        } catch (Exception ex) {
+            String errorMsg = "Error al crear cita:\n";
+            if (ex.getCause() != null) {
+                errorMsg += ex.getCause().getMessage();
+            } else {
+                errorMsg += ex.getMessage();
+            }
+            JOptionPane.showMessageDialog(this, errorMsg, "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void actualizarCita(ActionEvent e) {
+        if (idLabel.getText().equals("Nueva cita")) {
+            JOptionPane.showMessageDialog(this, "Primero busque una cita para actualizar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         if (!validarCampos()) return;
 
-        Cita cita = new Cita(
+        Medico medicoSeleccionado = (Medico) medicoComboBox.getSelectedItem();
+        Paciente pacienteSeleccionado = (Paciente) pacienteComboBox.getSelectedItem();
+
+        CitaCrearDTO citaDTO = new CitaCrearDTO(
                 dateChooser.getDate(),
                 (String) horaComboBox.getSelectedItem(),
                 motivoField.getText().trim(),
-                (Medico) medicoComboBox.getSelectedItem(),
-                (Paciente) pacienteComboBox.getSelectedItem()
+                medicoSeleccionado.getCedula(),
+                pacienteSeleccionado.getCurp()
         );
 
-        Response response = ClientNetwork.sendRequest(new Request("CREATE_CITA", cita));
+        Response response = ClientNetwork.sendRequest(new Request("UPDATE_CITA",
+                new Object[]{Long.parseLong(idLabel.getText()), citaDTO}));
 
         if (response.isSuccess()) {
-            JOptionPane.showMessageDialog(this, "Cita agregada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cita actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             limpiarCampos();
             loadCitas();
         } else {
@@ -229,34 +270,7 @@ public class CitaPanel extends JPanel implements PanelObserver {
         }
     }
 
-    private void actualizarCita(ActionEvent e) {
-        if (idLabel.getText().equals("Nueva cita")) {
-            JOptionPane.showMessageDialog(this, "Primero busque una cita para actualizar", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
 
-        if (!validarCampos()) return;
-
-        Cita cita = new Cita(
-                dateChooser.getDate(),
-                (String) horaComboBox.getSelectedItem(),
-                motivoField.getText().trim(),
-                (Medico) medicoComboBox.getSelectedItem(),
-                (Paciente) pacienteComboBox.getSelectedItem()
-        );
-
-        cita.setId(Long.parseLong(idLabel.getText()));
-
-        Response response = ClientNetwork.sendRequest(new Request("UPDATE_CITA", cita));
-
-        if (response.isSuccess()) {
-            JOptionPane.showMessageDialog(this, "Cita actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            limpiarCampos();
-            loadCitas();
-        } else {
-            JOptionPane.showMessageDialog(this, "Error: " + response.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
 
     private void eliminarCita(ActionEvent e) {
         if (idLabel.getText().equals("Nueva cita")) {

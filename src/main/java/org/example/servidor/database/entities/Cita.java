@@ -22,11 +22,11 @@ public class Cita implements Serializable {
     @Column(name = "motivo", length = 200, nullable = false)
     private String motivo;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 

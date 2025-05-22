@@ -2,6 +2,9 @@ package org.example.servidor;
 
 
 import org.example.servidor.database.DatabaseManager;
+import org.example.servidor.database.dtos.CitaCrearDTO;
+import org.example.servidor.database.dtos.CitaDTO;
+import org.example.servidor.database.dtos.UpdateCitaDTO;
 import org.example.servidor.database.entities.*;
 import org.example.servidor.services.*;
 import org.example.shared.*;
@@ -89,7 +92,7 @@ public class Servidor {
 
                     // Citas
                     case "CREATE_CITA":
-                        return new Response(true, CitaService.createCita((Cita) request.getData()));
+                        return new Response(true, CitaService.createCita((CitaCrearDTO) request.getData()));
                     case "GET_CITA":
                         return new Response(true, CitaService.getCitaById((Long) request.getData()));
                     case "GET_ALL_CITAS":
@@ -97,7 +100,7 @@ public class Servidor {
                     case "GET_CITAS_BY_FECHA":
                         return new Response(true, CitaService.getCitasByFecha((Date) request.getData()));
                     case "UPDATE_CITA":
-                        return new Response(true, CitaService.updateCita((Cita) request.getData()));
+                        return new Response(true, CitaService.updateCita((UpdateCitaDTO) request.getData()));
                     case "DELETE_CITA":
                         return new Response(true, CitaService.deleteCita((Long) request.getData()));
 

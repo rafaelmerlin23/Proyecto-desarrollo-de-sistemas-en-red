@@ -28,7 +28,7 @@ public class PacienteService {
         }
     }
 
-    public static MedicoDTO getPacienteByCurp(String curp) {
+    public static PacienteDTO getPacienteByCurp(String curp) {
         EntityManager em = DatabaseManager.getEntityManager();
         try {
             Paciente paciente = em.find(Paciente.class,curp);

@@ -3,6 +3,7 @@ package org.example.servidor.database.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,11 +23,14 @@ public class Paciente implements Serializable {
     @Column(name = "email", length = 100, nullable = false)
     private String email;
 
-    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Cita> citas;
+    @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY, cascade = {})
+    private List<Cita> citas = new ArrayList<>();
 
     // Constructores
-    public Paciente() {}
+
+    public Paciente() {
+    }
+
 
     public Paciente(String curp, String nombre, String telefono, String email) {
         this.curp = curp;

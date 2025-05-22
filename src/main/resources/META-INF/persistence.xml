@@ -15,6 +15,8 @@
         <properties>
             <property name="openjpa.ConnectionURL" value="jdbc:sqlite:medical.db"/>
             <property name="openjpa.ConnectionDriverName" value="org.sqlite.JDBC"/>
+            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+            <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
             <!-- Solo validar esquema, no crear ni modificar -->
             <property name="openjpa.jdbc.SynchronizeMappings" value="validate"/>
             <property name="openjpa.Log" value="SQL=TRACE"/>
