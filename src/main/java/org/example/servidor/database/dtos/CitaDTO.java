@@ -45,6 +45,7 @@ public class CitaDTO implements Serializable {
     private String hora;
     private String pacienteNombre;
     private String motivo;
+    private String medicoEspecialidad;
 
     public String getMotivo() {
         return motivo;
@@ -54,9 +55,19 @@ public class CitaDTO implements Serializable {
         this.motivo = motivo;
     }
 
+    public String getMedicoEspecialidad() {
+        return medicoEspecialidad;
+    }
+
+    public void setMedicoEspecialidad(String medicoEspecialidad) {
+        medicoEspecialidad = medicoEspecialidad;
+    }
+
     public String getMedicoNombre() {
         return medicoNombre;
     }
+
+
 
     public void setMedicoNombre(String medicoNombre) {
         this.medicoNombre = medicoNombre;
@@ -68,6 +79,10 @@ public class CitaDTO implements Serializable {
 
     public void setHora(String hora) {
         this.hora = hora;
+    }
+
+    public String getMedicoNombreConEspecialidad(){
+        return this.medicoNombre+" ("+this.medicoEspecialidad+")";
     }
 
     public String getPacienteNombre() {
@@ -90,6 +105,7 @@ public class CitaDTO implements Serializable {
         this.medicoNombre = cita.getMedico().getNombre();
         this.motivo = cita.getMotivo();
         this.hora = cita.getHora();
+        this.medicoEspecialidad = cita.getMedico().getEspecialidad();
     }
 
 }

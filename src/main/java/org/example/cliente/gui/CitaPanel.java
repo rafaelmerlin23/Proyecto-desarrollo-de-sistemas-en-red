@@ -24,6 +24,7 @@ public class CitaPanel extends JPanel implements PanelObserver {
     private JTextField motivoField;
     private JComboBox<Medico> medicoComboBox;
     private JComboBox<Paciente> pacienteComboBox;
+    private JDateChooser extraDateChooser;
     private JButton agregarBtn, buscarBtn, actualizarBtn, eliminarBtn, limpiarBtn, limpiarFiltroBtn;
     private JTable citasTable;
     private DefaultTableModel tableModel;
@@ -39,11 +40,15 @@ public class CitaPanel extends JPanel implements PanelObserver {
     @Override
     public void updateMedicos() {
         loadMedicos();
+        tableModel.setRowCount(0);
+        loadCitas();
     }
 
     @Override
     public void updatePacientes() {
         loadPacientes();
+        tableModel.setRowCount(0);
+        loadCitas();
     }
 
     private void initComponents() {
@@ -99,6 +104,14 @@ public class CitaPanel extends JPanel implements PanelObserver {
         formPanel.add(pacienteComboBox);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        extraDateChooser = new JDateChooser();
+        extraDateChooser.setDateFormatString("dd/MM/yyyy");
+        filterPanel.add(new JLabel("Fecha extra:"));
+        filterPanel.add(extraDateChooser);
+
+
+
 
         agregarBtn = new JButton("Agregar");
         agregarBtn.addActionListener(this::agregarCita);
@@ -106,7 +119,7 @@ public class CitaPanel extends JPanel implements PanelObserver {
 
         buscarBtn = new JButton("Buscar por fecha");
         buscarBtn.addActionListener(this::buscarCitasPorFecha);
-        buttonPanel.add(buscarBtn);
+        filterPanel.add(buscarBtn);
 
         actualizarBtn = new JButton("Actualizar");
         actualizarBtn.addActionListener(this::actualizarCita);
@@ -122,11 +135,13 @@ public class CitaPanel extends JPanel implements PanelObserver {
 
         limpiarFiltroBtn = new JButton("Limpiar filtro");
         limpiarFiltroBtn.addActionListener(e -> limpiarFiltro());
-        buttonPanel.add(limpiarFiltroBtn);
+        filterPanel.add(limpiarFiltroBtn);
 
-        JPanel northPanel = new JPanel(new BorderLayout(10, 10));
-        northPanel.add(formPanel, BorderLayout.CENTER);
-        northPanel.add(buttonPanel, BorderLayout.SOUTH);
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+        northPanel.add(formPanel);
+        northPanel.add(buttonPanel);
+        northPanel.add(filterPanel);
 
         tableModel = new DefaultTableModel(new String[]{"ID", "Fecha", "Hora", "Motivo", "Médico", "Paciente"}, 0) {
             public boolean isCellEditable(int row, int column) { return false; }
@@ -159,7 +174,7 @@ public class CitaPanel extends JPanel implements PanelObserver {
     }
 
     private void buscarCitasPorFecha(ActionEvent e) {
-        Date fecha = dateChooser.getDate();
+        Date fecha = extraDateChooser.getDate();
         if (fecha == null) {
             JOptionPane.showMessageDialog(this, "Seleccione una fecha", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
@@ -397,7 +412,7 @@ public class CitaPanel extends JPanel implements PanelObserver {
             tableModel.setRowCount(0);
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
             for (CitaDTO c : lista) {
-                tableModel.addRow(new Object[]{c.getId(), df.format(c.getFecha()), c.getHora(), c.getMotivo(), c.getMedicoNombre(), c.getPacienteNombre()});
+                tableModel.addRow(new Object[]{c.getId(), df.format(c.getFecha()), c.getHora(), c.getMotivo(), c.getMedicoNombreConEspecialidad(), c.getPacienteNombre()});
             }
         }
     }
