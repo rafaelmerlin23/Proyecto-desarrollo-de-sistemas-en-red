@@ -26,7 +26,6 @@ public class Medico implements Serializable {
     @OneToMany(mappedBy = "medico", fetch = FetchType.LAZY, cascade = {})
     private List<Cita> citas = new ArrayList<>();
 
-    private static final long serialVersionUID = 1L;
 
     // Constructores
     public Medico() {

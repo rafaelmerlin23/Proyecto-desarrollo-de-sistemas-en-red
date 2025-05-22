@@ -8,6 +8,7 @@ public class Response implements Serializable {
     private boolean success;
     private String message;
     private Object data;
+    private Exception exception;
 
     public Response(boolean success, Object data) {
         this.success = success;
@@ -29,6 +30,10 @@ public class Response implements Serializable {
 
     public Object getData() {
         return data;
+    }
+
+    public Exception getException() {
+        return exception;
     }
 
     @Override

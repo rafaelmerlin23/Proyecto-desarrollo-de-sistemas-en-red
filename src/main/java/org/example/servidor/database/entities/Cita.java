@@ -8,8 +8,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "citas")
 public class Cita implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Temporal(TemporalType.DATE)
@@ -23,14 +23,13 @@ public class Cita implements Serializable {
     private String motivo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medico_id", nullable = false)
+    @JoinColumn(name = "medico_id", referencedColumnName = "cedula", nullable = false)
     private Medico medico;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "paciente_id", nullable = false)
+    @JoinColumn(name = "paciente_id", referencedColumnName = "curp", nullable = false)
     private Paciente paciente;
 
-    private static final long serialVersionUID = 1L;
 
     // Constructores
 

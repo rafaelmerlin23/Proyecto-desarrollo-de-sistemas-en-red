@@ -8,19 +8,21 @@
     <persistence-unit name="medical-system" transaction-type="RESOURCE_LOCAL">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
+        <class>org.example.servidor.database.entities.Cita</class>
         <class>org.example.servidor.database.entities.Medico</class>
         <class>org.example.servidor.database.entities.Paciente</class>
-        <class>org.example.servidor.database.entities.Cita</class>
 
         <properties>
             <property name="openjpa.ConnectionURL" value="jdbc:sqlite:medical.db"/>
             <property name="openjpa.ConnectionDriverName" value="org.sqlite.JDBC"/>
-            <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+
+
             <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
-            <!-- Solo validar esquema, no crear ni modificar -->
-            <property name="openjpa.jdbc.SynchronizeMappings" value="validate"/>
-            <property name="openjpa.Log" value="SQL=TRACE"/>
-            <property name="openjpa.RuntimeUnenhancedClasses" value="supported"/>
+
+            <property name="openjpa.Log" value="DefaultLevel=TRACE,SQL=TRACE,Runtime=TRACE,Tool=TRACE"/>
+
+            <property name="openjpa.jdbc.Sequence" value="native"/>
+            <property name="openjpa.jdbc.Identity" value="native"/>
         </properties>
     </persistence-unit>
 </persistence>

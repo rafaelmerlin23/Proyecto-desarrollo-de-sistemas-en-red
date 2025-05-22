@@ -19,14 +19,22 @@ public class CitaService {
         try {
             transaction.begin();
 
-            Medico medico = em.getReference(Medico.class, citaDTO.getMedicoCedula());
-            Paciente paciente = em.getReference(Paciente.class, citaDTO.getPacienteCurp());
+            Medico medico = em.find(Medico.class, citaDTO.getMedicoCedula());
+            if (medico == null) {
+                throw new IllegalArgumentException("No se encontró médico con cédula: " + citaDTO.getMedicoCedula());
+            }
+
+            Paciente paciente = em.find(Paciente.class, citaDTO.getPacienteCurp());
+            if (paciente == null) {
+                throw new IllegalArgumentException("No se encontró paciente con CURP: " + citaDTO.getPacienteCurp());
+            }
 
             Cita newCita = new Cita();
             newCita.setFecha(citaDTO.getFecha());
             newCita.setHora(citaDTO.getHora());
             newCita.setMotivo(citaDTO.getMotivo());
             newCita.setMedico(medico);
+            newCita.setId(System.currentTimeMillis());
             newCita.setPaciente(paciente);
 
             em.persist(newCita);
@@ -75,14 +83,19 @@ public class CitaService {
                 throw new IllegalArgumentException("Cita no encontrada con ID: " + citaUpdateDTO.getId());
             }
 
-            Medico medico = em.getReference(Medico.class, citaUpdateDTO.getMedicoCedula());
-            Paciente paciente = em.getReference(Paciente.class, citaUpdateDTO.getPacienteCurp());
-
             cita.setFecha(citaUpdateDTO.getFecha());
             cita.setHora(citaUpdateDTO.getHora());
             cita.setMotivo(citaUpdateDTO.getMotivo());
-            cita.setMedico(medico);
-            cita.setPaciente(paciente);
+
+            if (citaUpdateDTO.getMedicoCedula() != null) {
+                Medico medico = em.getReference(Medico.class, citaUpdateDTO.getMedicoCedula());
+                cita.setMedico(medico);
+            }
+
+            if (citaUpdateDTO.getPacienteCurp() != null) {
+                Paciente paciente = em.getReference(Paciente.class, citaUpdateDTO.getPacienteCurp());
+                cita.setPaciente(paciente);
+            }
 
             transaction.commit();
             return new CitaDTO(cita);
@@ -121,7 +134,8 @@ public class CitaService {
         EntityManager em = DatabaseManager.getEntityManager();
         try {
             List<Cita> citas = em.createQuery(
-                            "SELECT c FROM Cita c WHERE c.fecha = :fecha ORDER BY c.hora", Cita.class).setParameter("fecha", fecha)
+                            "SELECT c FROM Cita c WHERE c.fecha = :fecha ORDER BY c.hora", Cita.class)
+                    .setParameter("fecha", fecha)
                     .getResultList();
             return citas.stream().map(CitaDTO::new).collect(Collectors.toList());
         } finally {
